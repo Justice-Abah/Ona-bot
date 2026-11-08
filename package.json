@@ -1,0 +1,9 @@
+{
+  "name": "ona-bot",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Ona: WhatsApp opportunity coach (Twilio sandbox test version)",
+  "scripts": {
+    "simulate": "node scripts/simulate.js"
+  }
+}
