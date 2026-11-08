@@ -32,6 +32,21 @@ module.exports = async (req, res) => {
     console.error(e);
     messages = ['Sorry, something went wrong on my side. Please try again in a minute.'];
   }
+  // Twilio's newer "Try out WhatsApp" webhook does not deliver TwiML replies, so by default
+  // Ona sends its replies through the Twilio API (needs TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN,
+  // TWILIO_WHATSAPP_FROM). Set REPLY_MODE=twiml to reply with TwiML instead.
+  const useApi = process.env.REPLY_MODE !== 'twiml' && tw.canSend();
+  if (useApi){
+    for (const m of messages){
+      try { await tw.send(phone, m); }
+      catch (e){ console.error('Reply via API failed:', e.message); break; }
+    }
+    console.log(`Replied to ${ona.mask(phone)} with ${messages.length} message(s) via API`);
+    res.setHeader('Content-Type', 'text/xml');
+    res.status(200).send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
+    return;
+  }
+  if (!tw.canSend()) console.warn('Twilio API settings missing; replying with TwiML.');
   res.setHeader('Content-Type', 'text/xml');
   res.status(200).send(tw.twiml(messages));
 };
