@@ -10,6 +10,7 @@ module.exports = async (req, res) => {
   if (secret && req.headers.authorization !== `Bearer ${secret}`){ res.status(401).send('Unauthorized'); return; }
   if (!store.hasRedis() || !tw.canSend()){ res.status(200).json({ ok: false, reason: 'Memory or Twilio sending not configured' }); return; }
 
+  await ona.prepare(); // load today's live opportunities
   const report = { users: 0, sent: 0, failed: 0 };
   for (const phone of await store.allPhones()){
     const u = await store.getUser(phone); if (!u) continue;
