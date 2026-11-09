@@ -2,6 +2,7 @@
 // Same brain and memory as the WhatsApp bot, no Twilio needed.
 const ona = require('../lib/ona');
 const store = require('../lib/store');
+const files = require('../lib/files');
 
 const PAGE = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -26,14 +27,15 @@ header button{margin-left:auto;background:transparent;border:1px solid rgba(255,
 .chips button{flex:none;border:1px solid var(--line);background:var(--chip);color:var(--leaf);border-radius:999px;padding:6px 12px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
 form{display:flex;gap:8px;padding:8px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
 textarea{flex:1;resize:none;border:0;border-radius:22px;padding:11px 16px;background:var(--panel);color:var(--ink);font:inherit;min-height:44px;max-height:140px}
+.att{width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;flex:none;font-size:22px}
 .send{width:44px;height:44px;border-radius:50%;border:0;background:var(--leaf);color:var(--on-leaf);cursor:pointer;display:grid;place-items:center;flex:none}
 :focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
 </style></head><body><div class="app">
 <header><div class="av">O</div><div><div class="nm">Ona</div><div class="st" id="st">online</div></div><button id="reset" type="button">Start over</button></header>
-<div class="note">Test version of Ona. This is how it works on WhatsApp. Type a reply or tap a suggestion.</div>
+<div class="note">Test version of Ona. This is how it works on WhatsApp. Type a reply, tap a suggestion, or 📎 attach your CV (PDF, Word or photo).</div>
 <div id="chat" aria-live="polite"></div>
 <div class="chips" id="chips"></div>
-<form id="f"><textarea id="t" rows="1" placeholder="Message" aria-label="Message"></textarea>
+<form id="f"><button type="button" class="att" id="att" aria-label="Attach your CV (PDF, Word or photo)" title="Attach your CV (PDF, Word or photo)">📎</button><input type="file" id="file" hidden accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg,.webp,application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><textarea id="t" rows="1" placeholder="Message" aria-label="Message"></textarea>
 <button class="send" aria-label="Send"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button></form>
 </div><script>
 var KEY='ona-web-id',LOG='ona-web-log',id,log=[];
@@ -48,12 +50,16 @@ function chips(last){var c=[];var l=(last||'').toUpperCase();
  else if(/REPLY 1, 2 OR 3/.test(l))c=['1','2','3'];else c=['APPLY 1','NEXT','NEXT 7','STATUS','MATCHES','HELP'];
  document.getElementById('chips').innerHTML=c.map(function(x){return '<button type="button">'+x+'</button>'}).join('')}
 document.getElementById('chips').onclick=function(e){if(e.target.tagName==='BUTTON')send(e.target.textContent)};
-function send(text){text=text.trim();if(!text||busy)return;add('me',text);busy=true;document.getElementById('st').textContent='typing…';
+function send(text,file){text=(text||'').trim();if((!text&&!file)||busy)return;add('me',file?'📄 '+file.name:text);busy=true;document.getElementById('st').textContent=file?'reading your CV…':'typing…';
  var ty=document.createElement('div');ty.className='row';ty.innerHTML='<div class="b typing">Ona is typing…</div>';chat.appendChild(ty);chat.scrollTop=chat.scrollHeight;
- fetch(location.pathname,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,text:text})})
+ fetch(location.pathname,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(file?{id:id,file:file}:{id:id,text:text})})
  .then(function(r){return r.json()}).then(function(j){ty.remove();(j.messages||['Something went wrong. Try again.']).forEach(function(m){add('bot',m)});chips((j.messages||[]).slice(-1)[0])})
  .catch(function(){ty.remove();add('bot','I could not connect. Check your internet and try again.',false)})
  .then(function(){busy=false;document.getElementById('st').textContent='online'})}
+document.getElementById('att').onclick=function(){if(!busy)document.getElementById('file').click()};
+document.getElementById('file').onchange=function(e){var f=e.target.files[0];e.target.value='';if(!f)return;
+ if(f.size>3*1024*1024){add('bot','That file is over 3 MB. Please send a smaller file, or paste your CV as text.',false);return}
+ var rd=new FileReader();rd.onload=function(){send('',{name:f.name,type:f.type||'',data:String(rd.result).split(',')[1]||''})};rd.readAsDataURL(f)};
 document.getElementById('f').onsubmit=function(e){e.preventDefault();var v=t.value;t.value='';t.style.height='';send(v)};
 t.addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();document.getElementById('f').requestSubmit()}});
 t.addEventListener('input',function(){t.style.height='auto';t.style.height=Math.min(t.scrollHeight,140)+'px'});
@@ -67,7 +73,13 @@ module.exports = async (req, res) => {
   let b = req.body || {};
   if (typeof b === 'string'){ try { b = JSON.parse(b); } catch (e){ b = {}; } }
   const id = String(b.id || '');
-  const text = String(b.text || '').slice(0, 6000);
+  let text = String(b.text || '').slice(0, 6000);
+  if (/^web:\d{6,12}$/.test(id) && b.file && b.file.data){
+    if (!store.hasRedis()){ res.status(200).json({ messages: ['⚙️ Ona’s memory isn’t connected yet.'] }); return; }
+    const r = await files.extract({ buffer: Buffer.from(String(b.file.data), 'base64'), type: String(b.file.type || ''), name: String(b.file.name || '') });
+    if (r.error){ res.status(200).json({ messages: [r.error] }); return; }
+    text = r.text.slice(0, 20000);
+  }
   if (!/^web:\d{6,12}$/.test(id) || !text){ res.status(400).json({ messages: ['Something is off with this page. Reload it and try again.'] }); return; }
   if (!store.hasRedis()){ res.status(200).json({ messages: ['⚙️ Ona’s memory isn’t connected yet.'] }); return; }
   try {
