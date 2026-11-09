@@ -3,6 +3,7 @@
 const ona = require('../lib/ona');
 const store = require('../lib/store');
 const tw = require('../lib/twilio');
+const files = require('../lib/files');
 
 module.exports = async (req, res) => {
   if (req.method === 'GET'){
@@ -19,14 +20,20 @@ module.exports = async (req, res) => {
 
   const b = req.body || {};
   const phone = b.From;                       // e.g. whatsapp:+2348012345678
-  const media = +b.NumMedia > 0 ? { type: b.MediaContentType0, load: () => tw.downloadMedia(b.MediaUrl0) } : null;
 
   let messages;
   try {
     if (!store.hasRedis()) {
       messages = ['⚙️ Ona is almost ready, but its memory isn’t connected yet. (Setup: add Upstash Redis in the Vercel project’s Storage tab, then redeploy.)'];
     } else {
-      messages = await ona.handle({ phone, text: b.Body || '', waName: b.ProfileName || '', media });
+      let text = b.Body || '';
+      if (+b.NumMedia > 0){
+        // A file was sent (PDF, Word, photo…): turn it into text and treat it like a pasted CV.
+        const r = await files.extract({ buffer: await tw.downloadMedia(b.MediaUrl0), type: b.MediaContentType0 || '', name: b.Body || '' });
+        if (r.error) messages = [r.error];
+        else text = r.text;
+      }
+      if (!messages) messages = await ona.handle({ phone, text, waName: b.ProfileName || '' });
     }
   } catch (e){
     console.error(e);
