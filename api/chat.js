@@ -32,10 +32,10 @@ textarea{flex:1;resize:none;border:0;border-radius:22px;padding:11px 16px;backgr
 :focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
 </style></head><body><div class="app">
 <header><div class="av">O</div><div><div class="nm">Ona</div><div class="st" id="st">online</div></div><button id="reset" type="button">Start over</button></header>
-<div class="note">Test version of Ona. This is how it works on WhatsApp. Type a reply, tap a suggestion, or 📎 attach your CV (PDF, Word or photo).</div>
+<div class="note">Test version of Ona. This is how it works on WhatsApp. Type a reply, tap a suggestion, or 📎 attach your CV (PDF or Word).</div>
 <div id="chat" aria-live="polite"></div>
 <div class="chips" id="chips"></div>
-<form id="f"><button type="button" class="att" id="att" aria-label="Attach your CV (PDF, Word or photo)" title="Attach your CV (PDF, Word or photo)">📎</button><input type="file" id="file" hidden accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg,.webp,application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><textarea id="t" rows="1" placeholder="Message" aria-label="Message"></textarea>
+<form id="f"><button type="button" class="att" id="att" aria-label="Attach your CV (PDF or Word)" title="Attach your CV (PDF or Word)">📎</button><input type="file" id="file" hidden accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg,.webp,application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><textarea id="t" rows="1" placeholder="Message" aria-label="Message"></textarea>
 <button class="send" aria-label="Send"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.4 10l12.6 2-12.6 2z"/></svg></button></form>
 </div><script>
 var KEY='ona-web-id',LOG='ona-web-log',id,log=[];
@@ -87,6 +87,7 @@ module.exports = async (req, res) => {
     res.status(200).json({ messages });
   } catch (e){
     console.error(e);
-    res.status(200).json({ messages: ['Sorry, something went wrong on my side. Please try again in a minute.'] });
+    // Test version: show the technical reason so the team can fix it quickly.
+    res.status(200).json({ messages: ['Sorry, something went wrong on my side. Please try again in a minute.', `🛠 Test info for the team: ${String(e && e.message || e).slice(0, 300)}`] });
   }
 };
