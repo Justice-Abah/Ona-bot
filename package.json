@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "Ona: WhatsApp opportunity coach (Twilio sandbox test version)",
+  "dependencies": {
+    "unpdf": "1.4.0"
+  },
   "scripts": {
     "simulate": "node scripts/simulate.js"
   }
