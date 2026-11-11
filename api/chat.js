@@ -32,7 +32,7 @@ textarea{flex:1;resize:none;border:0;border-radius:22px;padding:11px 16px;backgr
 :focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
 </style></head><body><div class="app">
 <header><div class="av">O</div><div><div class="nm">Ona</div><div class="st" id="st">online</div></div><button id="reset" type="button">Start over</button></header>
-<div class="note">Test version of Ona. This is how it works on WhatsApp. Type a reply, tap a suggestion, or 📎 attach your CV (PDF or Word).</div>
+<div class="note">Test version of Ona, working the same way as on WhatsApp. 📎 Attach your CV (PDF or Word), then tell Ona what you want, like “data jobs in Abuja”.</div>
 <div id="chat" aria-live="polite"></div>
 <div class="chips" id="chips"></div>
 <form id="f"><button type="button" class="att" id="att" aria-label="Attach your CV (PDF or Word)" title="Attach your CV (PDF or Word)">📎</button><input type="file" id="file" hidden accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg,.webp,application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><textarea id="t" rows="1" placeholder="Message" aria-label="Message"></textarea>
@@ -45,9 +45,8 @@ var chat=document.getElementById('chat'),t=document.getElementById('t'),busy=fal
 function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function fmt(s){return esc(s).replace(/\\*([^*\\n]+)\\*/g,'<b>$1</b>').replace(/(https?:\\/\\/[^\\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>')}
 function add(who,text,save){var r=document.createElement('div');r.className='row '+who;r.innerHTML='<div class="b">'+fmt(text)+'</div>';chat.appendChild(r);chat.scrollTop=chat.scrollHeight;if(save!==false){log.push([who,text]);if(log.length>200)log=log.slice(-200);try{localStorage.setItem(LOG,JSON.stringify(log))}catch(e){}}}
-function chips(last){var c=[];var l=(last||'').toUpperCase();
- if(/REPLY \\*YES\\*/.test(l))c=['YES'];else if(/\\*SAMPLE\\*/.test(l))c=['SAMPLE'];else if(/HOW OLD/.test(l))c=['22','26','30'];
- else if(/REPLY 1, 2 OR 3/.test(l))c=['1','2','3'];else c=['APPLY 1','NEXT','NEXT 7','STATUS','MATCHES','HELP'];
+function chips(last){var c;var l=(last||'').toUpperCase();var a=l.match(/\\*APPLY (\\d+)\\*/);
+ if(/\\*SAMPLE\\*/.test(l))c=['SAMPLE'];else if(/NEXT 7/.test(l))c=['NEXT 7','STATUS','MATCHES'];else{c=['MORE','JOBS','REMOTE','SCHOLARSHIPS','STATUS','FIX','HELP'];if(a)c.unshift('APPLY '+a[1])}
  document.getElementById('chips').innerHTML=c.map(function(x){return '<button type="button">'+x+'</button>'}).join('')}
 document.getElementById('chips').onclick=function(e){if(e.target.tagName==='BUTTON')send(e.target.textContent)};
 function send(text,file){text=(text||'').trim();if((!text&&!file)||busy)return;add('me',file?'📄 '+file.name:text);busy=true;document.getElementById('st').textContent=file?'reading your CV…':'typing…';
