@@ -57,7 +57,7 @@ button:disabled{opacity:.6;cursor:default}
 .done{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:24px;text-align:center}
 .done h2{margin:0 0 6px}
 :focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
-.foot{color:var(--muted);font-size:13px;text-align:center}
+.foot{color:var(--muted);font-size:13px;text-align:center;line-height:1.7}.foot b{color:var(--ink)}
 table{border-collapse:collapse;width:100%;font-size:14px}td,th{border-bottom:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}th{color:var(--muted);font-size:12px;font-weight:600}
 .wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:14px}
 .kpis{display:flex;flex-wrap:wrap;gap:10px}.k{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:130px}.k b{display:block;font-size:22px;font-variant-numeric:tabular-nums}
@@ -87,7 +87,7 @@ const FORM = () => `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><
 <button type="submit" id="go">Send feedback</button>
 </form>
 <div class="done" id="done" hidden><h2>Thank you! 🙏</h2><p>Your feedback has reached the ${esc(NAME)} team.</p><p><a href="/api/chat" style="color:var(--leaf);font-weight:700">Back to ${esc(NAME)}</a></p></div>
-<p class="foot">We only use your answers to improve ${esc(NAME)}.</p>
+<p class="foot">We only use your answers to improve ${esc(NAME)}.<br>Built by <b>Justice Abah</b> · ${esc(NAME)}™ © ${new Date().getFullYear()} Justice Abah</p>
 </main><script>
 var f=document.getElementById('f'),err=document.getElementById('err'),go=document.getElementById('go');
 f.addEventListener('submit',function(e){e.preventDefault();err.hidden=true;
