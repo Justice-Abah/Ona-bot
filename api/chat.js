@@ -32,7 +32,7 @@ textarea{flex:1;resize:none;border:0;border-radius:22px;padding:11px 16px;backgr
 :focus-visible{outline:2px solid var(--leaf);outline-offset:2px}
 </style></head><body><div class="app">
 <header><div class="av">O</div><div><div class="nm">Ona</div><div class="st" id="st">online</div></div><button id="reset" type="button">Start over</button></header>
-<div class="note">Test version of Ona, working the same way as on WhatsApp. 📎 Attach your CV (PDF or Word), then tell Ona what you want, like “data jobs in Abuja”.</div>
+<div class="note">Test version of Ona, working the same way as on WhatsApp. 📎 Attach your CV (PDF or Word) or paste a portfolio link, then tell Ona what you want, like “data jobs in Abuja”.</div>
 <div id="chat" aria-live="polite"></div>
 <div class="chips" id="chips"></div>
 <form id="f"><button type="button" class="att" id="att" aria-label="Attach your CV (PDF or Word)" title="Attach your CV (PDF or Word)">📎</button><input type="file" id="file" hidden accept=".pdf,.docx,.doc,.txt,.png,.jpg,.jpeg,.webp,application/pdf,image/*,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><textarea id="t" rows="1" placeholder="Message" aria-label="Message"></textarea>
