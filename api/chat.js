@@ -13,19 +13,19 @@ const PAGE = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 *{box-sizing:border-box}html,body{height:100%;margin:0}
 body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif,"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji";display:flex;justify-content:center}
 .app{width:100%;max-width:560px;height:100%;display:flex;flex-direction:column;background:var(--wall)}
-header{display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-left));padding-top:max(12px,env(safe-area-inset-top));background:var(--leaf);color:var(--on-leaf)}
+header{flex:none;display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-left));padding-top:max(12px,env(safe-area-inset-top));background:var(--leaf);color:var(--on-leaf)}
 .av{width:40px;height:40px;border-radius:50%;background:var(--on-leaf);color:var(--leaf);display:grid;place-items:center;font-weight:800;font-size:20px}
 .nm{font-weight:700;font-size:17px;line-height:1.1}.st{font-size:12.5px;opacity:.85}
 header button{margin-left:auto;background:transparent;border:1px solid rgba(255,255,255,.5);color:var(--on-leaf);border-radius:999px;padding:6px 12px;font:inherit;font-size:13px;cursor:pointer}
-.note{font-size:12.5px;color:var(--muted);text-align:center;padding:8px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
+.note{flex:none;font-size:12.5px;color:var(--muted);text-align:center;padding:8px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
 #chat{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:6px}
 .row{display:flex}.row.me{justify-content:flex-end}
 .b{max-width:86%;background:var(--panel);padding:8px 10px;border-radius:12px;box-shadow:0 1px 0 rgba(0,0,0,.08);white-space:pre-wrap;overflow-wrap:anywhere}
 .row.me .b{background:var(--me)}.b a{color:var(--leaf);font-weight:600}
 .typing{color:var(--muted);font-style:italic}
-.chips{display:flex;gap:6px;overflow-x:auto;padding:8px 12px 0}
+.chips{flex:none;display:flex;gap:6px;overflow-x:auto;padding:8px 12px 0}
 .chips button{flex:none;border:1px solid var(--line);background:var(--chip);color:var(--leaf);border-radius:999px;padding:6px 12px;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
-form{display:flex;gap:8px;padding:8px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
+form{flex:none;display:flex;gap:8px;padding:8px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom))}
 textarea{flex:1;resize:none;border:0;border-radius:22px;padding:11px 16px;background:var(--panel);color:var(--ink);font:inherit;min-height:44px;max-height:140px}
 .att{width:44px;height:44px;border-radius:50%;border:0;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center;flex:none;font-size:22px}
 .send{width:44px;height:44px;border-radius:50%;border:0;background:var(--leaf);color:var(--on-leaf);cursor:pointer;display:grid;place-items:center;flex:none}
