@@ -11,7 +11,7 @@ const PAGE = `<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">
 :root{--bg:#E9EDE6;--wall:#EFEAE2;--panel:#fff;--ink:#16233B;--muted:#5B677A;--line:#D6DCD3;--leaf:#167A4C;--on-leaf:#fff;--me:#D9FDD3;--chip:#fff}
 @media(prefers-color-scheme:dark){:root{--bg:#0B141A;--wall:#0B141A;--panel:#1F2C34;--ink:#E9EDEF;--muted:#8696A0;--line:#2A3942;--leaf:#21A366;--on-leaf:#fff;--me:#005C4B;--chip:#1F2C34}}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;display:flex;justify-content:center}
+body{background:var(--bg);color:var(--ink);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif,"Segoe UI Emoji","Apple Color Emoji","Noto Color Emoji";display:flex;justify-content:center}
 .app{width:100%;max-width:560px;height:100%;display:flex;flex-direction:column;background:var(--wall)}
 header{display:flex;align-items:center;gap:12px;padding:12px max(16px,env(safe-area-inset-left));padding-top:max(12px,env(safe-area-inset-top));background:var(--leaf);color:var(--on-leaf)}
 .av{width:40px;height:40px;border-radius:50%;background:var(--on-leaf);color:var(--leaf);display:grid;place-items:center;font-weight:800;font-size:20px}
@@ -46,7 +46,7 @@ function esc(s){return s.replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&
 function fmt(s){return esc(s).replace(/\\*([^*\\n]+)\\*/g,'<b>$1</b>').replace(/(https?:\\/\\/[^\\s<]+)/g,'<a href="$1" target="_blank" rel="noopener">$1</a>')}
 function add(who,text,save){var r=document.createElement('div');r.className='row '+who;r.innerHTML='<div class="b">'+fmt(text)+'</div>';chat.appendChild(r);chat.scrollTop=chat.scrollHeight;if(save!==false){log.push([who,text]);if(log.length>200)log=log.slice(-200);try{localStorage.setItem(LOG,JSON.stringify(log))}catch(e){}}}
 function chips(last){var c;var l=(last||'').toUpperCase();var a=l.match(/\\*APPLY (\\d+)\\*/);
- if(/\\*SAMPLE\\*/.test(l))c=['SAMPLE'];else if(/NEXT 7/.test(l))c=['NEXT 7','STATUS','MATCHES'];else{c=['MORE','JOBS','REMOTE','SCHOLARSHIPS','STATUS','FIX','HELP'];if(a)c.unshift('APPLY '+a[1])}
+ if(/\\*SAMPLE\\*/.test(l))c=['SAMPLE'];else if(/NEXT 7/.test(l))c=['NEXT 7','STATUS','MATCHES'];else{c=['MORE','SAVED','JOBS','REMOTE','SCHOLARSHIPS','STATUS','FIX','HELP'];var k=l.match(/\\*CONTINUE (\\d+)\\*/);if(a){c.unshift('SAVE '+a[1]);c.unshift('APPLY '+a[1])}if(k)c.unshift('CONTINUE '+k[1])}
  document.getElementById('chips').innerHTML=c.map(function(x){return '<button type="button">'+x+'</button>'}).join('')}
 document.getElementById('chips').onclick=function(e){if(e.target.tagName==='BUTTON')send(e.target.textContent)};
 function send(text,file){text=(text||'').trim();if((!text&&!file)||busy)return;add('me',file?'📄 '+file.name:text);busy=true;document.getElementById('st').textContent=file?'reading your CV…':'typing…';
